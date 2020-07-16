@@ -1,0 +1,136 @@
+.\" Jean II - HPLB - 96
+.\" iwpriv.8
+.\"
+.TH IWPRIV 8 "31.říjen 1996" "net-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iwpriv \- konfiguruje doplňkové (specifické) parametry bezdrátového
+síťového rozhraní
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.BI "iwpriv [" rozhraní ]
+.br
+.BI "iwpriv " "rozhraní specifický-příkaz " "[" specifické-parametry ]
+.br
+.BI "iwpriv " "rozhraní specifický-příkaz [I] " "[" specifické-parametry ]
+.br
+.BI "iwpriv " rozhraní " --all"
+.br
+.BI "iwpriv " rozhraní " roam " {on,off}
+.br
+.BI "iwpriv " rozhraní " port " {ad-hoc,managed,N}
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B Iwpriv
+je doprovodným nástrojem k
+.IR iwconfig (8).
+.B Iwpriv
+pracuje s parametry a nastaveními specifickými pro každý ovladač (na rozdíl od
+.IR "iwconfig" ,
+který pracuje s obecnými).
+.PP
+Bez uvedení parametru
+.B iwpriv
+vypíše specifické přikazy dostupné na každém rozhraní a 
+parametry, které vyžadují. Pomocí této informace může uživatel
+použít tyto specifické příkazy na určeném rozhraní.
+.PP
+Teoreticky by dokumentace každého ovladače měla uvádět, jak
+používat tyto pro rozhraní specifické příkazy a jejich účinek.
+.\"
+.\" PARAMETER part
+.\"
+.SH PARAMETRY
+.TP
+.IR specifický-příkaz " [" specifické-parametry ]
+Vykoná určený
+.I specifický-příkaz
+na rozhraní.
+.br
+Příkaz může použít nebo vyžadovat parametry a může zobrazit informaci.
+Parametry tedy mohou i nemusejí být vyžadovány a měly by odpovídat tomu, co
+příkaz očekává. Seznam příkazů, které
+.B iwpriv
+zobrazí (když je volán bez parametrů), by měl napovědět, jak s parametry zacházet.
+.br
+Nicméně pro informaci o příkazech a jejich správném použití je nejlepší
+se obrátit na dokumnetaci k ovladači zařízení.
+.TP
+.I "specifický-příkaz [I]" "[" specifické-parametry ]
+Viz výše, pouze
+.I I
+(celé číslo) je předáno příkazu jako
+.IR "Token Index" .
+Token Index používají jen některé příkazy (většina jej ignoruje), kdy jej použít by
+měla říci dokumnetace ovladače.
+.TP
+.BR -a / --all
+Vykoná a zobrazí všechny specifické příkazy, které nemají žádné parametry
+(tj. pouze čtou).
+.TP
+.B roam
+Povolí nebo zakáže roaming, je-li podporován. Volá specifický příkaz
+.IR setroam ,
+který je obsažen v ovladači
+.IR "wavelan_cs".
+.TP
+.B port
+Přečte nebo nastaví druh portu. Volá specifický příkaz
+.IR gport_type ", " sport_type ", " get_port " nebo " set_port ","
+obsažený v ovladačích
+.IR wavelan2_cs " a " wvlan_cs "."
+.\"
+.\" DISPLAY part
+.\"
+.SH ZOBRAZENÍ
+Pro každé zařízení, které podporuje specifické příkazy, zobrazí
+.I iwpriv
+seznam dostupných specifických příkazů.
+.PP
+To zahrnuje název specifického příkazu, parametry, které mohou být nastaveny a jejich typ
+a parametry které mohou být zobrazeny a jejich typ.
+.PP
+Například může zobrazit :
+.br
+.B "eth0      Available specific ioctl :"
+.br
+.B "          setqualthr (89F0) : set   1 byte & get   0"
+.br
+.B "          gethisto (89F7) : set   0      & get  16 int"
+.PP
+To znamená, že je možné nastavit quality threshold a zobrazit
+histogram s až 16 hodnotami pomocí těchto příkazů:
+.br
+.I "  iwpriv eth0 setqualthr 20"
+.br
+.I "  iwpriv eth0 gethisto"
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" FILES part
+.\"
+.SH SOUBORY
+.I /proc/net/wireless
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR iwconfig (8),
+.BR iwlist (8),
+.BR iwevent (8),
+.BR iwspy (8),
+.BR wireless (7).

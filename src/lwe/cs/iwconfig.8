@@ -1,0 +1,535 @@
+.\" Jean II - HPLB - 1996 => HPL - 2004
+.\" iwconfig.8
+.\"
+.TH IWCONFIG 8 "22.června 2004" "wireless-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iwconfig \- nastavuje rozhraní bezdrátové sítě
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.BI "iwconfig [" rozhraní ]
+.br
+.BI "iwconfig " rozhraní " [essid " X "] [nwid " N "] [mode " M "] [freq " F "]
+.br
+.BI "                   [channel " C ] [sens " S "] [ap " A "] [nick " NN ]
+.br
+.BI "                   [rate " R "] [rts " RT "] [frag " FT "] [txpower " T ]
+.br
+.BI "                   [enc " E "] [key " K "] [power " P "] [retry " R ]
+.br
+.BI "                   [commit]
+.br
+.BI "iwconfig --help"
+.br
+.BI "iwconfig --version"
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B Iwconfig
+je podobný příkazu
+.IR ifconfig (8),
+ale je věnovaný bezdrátovým rozhraním. Je používán k nastavení těch parametrů 
+síťových rozhraní, které jsou specifické pro bezdrátový provoz (např. frekvence).
+.B Iwconfig
+může být také použit k zobrazení těchto parametrů a bezdrátových
+statistik (získaných z
+.IR /proc/net/wireless ).
+.PP
+Všechny tyto parametry a statistiky jsou závislé na zařízení. Každý ovladač
+poskytuje, v závislosti na hardwarové podpoře, jen některé z nich
+a rozsah hodnot se může měnit. Prosím obracejte se na manuálové stránky
+jednotlivých zařízení pro další detaily.
+.\"
+.\" PARAMETER part
+.\"
+.SH PARAMETRY
+.TP
+.B essid
+Nastaví ESSID (nebo Network Name - u některých produktů může být nazváno
+Domain ID). ESSID se používá k identifikaci buněk, které jsou
+součástí stejné virtuální sítě.
+.br
+Na rozdíl od adresy AP nebo NWID, která určuje jedinou buňku, ESSID
+určuje skupinu buněk, spojených opakovači (repeater) nebo infrastrukturou,
+mezi kterými může uživatel transparentně přecházet.
+.br
+U některých karet je možné vypnout kontrolu ESSID (promiskuitní ESSID)
+pomocí
+.IR off " nebo " any " (a " on
+k opětovnému zapnutí).
+.br
+Pokud je ESSID sítě jedním z klíčových slov
+.RI ( off ", " on " nebo " any ),
+použije se
+.I --
+.br 
+.B Příklady:
+.br
+.I "	iwconfig eth0 essid any"
+.br
+.I "	iwconfig eth0 essid ""Moje sit""
+.br
+.I "	iwconfig eth0 essid -- ""ANY""
+.TP
+.BR nwid / domain
+Nastaví Network ID (u některých produktů může být nazváno Domain ID).
+Protože všechny sousedící bezdrátové sítě sdílejí stejné médium, je
+tento parametr používán k jejich rozlišení (tvorbě logických kolokovaných
+sítí) a identifikaci nodů patřících do stejné buňky.
+.br
+Tento parametr se používá pouze u pre-802.11 zařízení. Protokol 802.11
+používá pro tuto funkci ESSID a adresu AP.
+.br
+U některých karet je možné vypnout kontrolu Network ID (promiskuitní NWID)
+pomocí 
+.IR off " (a " on
+k opětovnému zapnutí).
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 nwid AB34
+.br
+.I "	iwconfig eth0 nwid off"
+.TP
+.BR freq / channel
+Nastaví pracovní frekvenci nebo kanál zařízení. Hodnota nižší než 1000
+znamená číslo kanálu, hodnota vyšší než 1000 je frekvence v Hz.
+Je možné připojit k hodnotě příponu k, M nebo G (například "2.46G" pro
+frekvenci 2,46 GHz), nebo doplnit dostatečný počet nul.
+.br
+Kanály jsou obvykle číslovány od 1, je možné použít
+.IR iwlist (8)
+k získání celkového počtu kanálů, seznamu dostupných frekvencí a zobrazení současné
+frekvence jako kanálu. V závislosti na předpisech mohou být některé frekvence/kanály
+nedostupné.
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 freq 2422000000"
+.br
+.I "	iwconfig eth0 freq 2.422G"
+.br
+.I "	iwconfig eth0 channel 3"
+.TP
+.B sens
+Nastaví práh citlivosti. To je nejnižší úroveň síly signálu při které
+hardware považuje přijaté pakety za použitelné. Kladné hodnoty jsou
+interpretovány jako hodnota používaná hardwarem nebo jako procenta,
+negativní hodnoty jako dBm. V závislosti na hardwarové implementaci může
+mít tento parametr další funkce.
+.br
+Tento parametr může ovládat práh příjmu (receive threshold) - nejnižší úroveň signálu
+při které se hardware pokusí o příjem paketu, slabší signál je ignorován. Může také
+nastavovat práh ústupu (defer threshold) - nejnižší úroveň signálu, od které hardware 
+považuje kanál za obsazený. Při správném nastavení těchto prahů karta neztrácí čas 
+příjmen šumu. U moderních zařízení se zdá, že tyto prahy regulují automaticky.
+.br
+U moderních karet může tento parametr ovládat práh předání (handover/roaming
+threshold) - nejnižší úroveň signálu při které hardware ještě zůstane asociováno se
+současným přístupovým bodem. Pokud úroveň signálu poklesne pod tuto hodnotu, 
+začne karta hledat nový/lepší přístupový bod.
+.br
+.B Příklad:
+.br
+.I "	iwconfig eth0 sens -80"
+.TP
+.B mode
+nastaví pracovní režim zařízení, což závisí na topologii sítě.
+Režim může být
+.I Ad-Hoc
+(síť složená pouze z jedné buňky a bez přístupového bodu),
+.I Managed
+(node se připojuje do sítě složené z mnoha přístupových bodů, s roamingem),
+.I Master
+(node je synchronisation master nebo slouží jako přístupový bod),
+.I Repeater
+(node předává pakety mezi ostatními bezdrátovými nody),
+.I Secondary
+(node slouží jako záložní master/repeater),
+.I Monitor
+(node není asociován s žádnou buňkou a pasivně monitoruje pakety na frekvenci) nebo
+.IR Auto .
+.br
+.B příklad:
+.br
+.I "	iwconfig eth0 mode Managed"
+.br
+.I "	iwconfig eth0 mode Ad-Hoc"
+.TP
+.B ap
+Nařídí kartě připojit se k přístupovému bodu určenému adresou,
+pokud je to možné. Pokud se kvalita spojení příliš sníží,
+může se ovladač vrátit do automatického módu (karta vybere
+nejlepší přístupový bod v dosahu).
+.br
+Je také možné použít
+.I off
+k opětovnému zapnutí automatického módu beze změny současného přístupového bodu
+nebo
+.I any
+či
+.I auto
+k vynucení opětovné asociace karty s momentálně nejlepším přístupovým bodem.
+.br
+.B Příklad :
+.br
+.I "	iwconfig eth0 ap 00:60:1D:01:23:45"
+.br
+.I "	iwconfig eth0 ap any"
+.br
+.I "	iwconfig eth0 ap off"
+.TP
+.BR nick [name]
+Nastaví přezdívku neboli station name. Některé 802.11 produkty ji definují,
+ale co se týká protokolů (MAC, IP, TCP), není používána a při konfiguraci je
+zcela nepotřebná. Používají ji pouze některé diagnostické nástroje.
+.br
+.B Příklad:
+.br
+.I "	iwconfig eth0 nickname ""Muj linuxovy node""
+.TP
+.BR rate / bit [rate]
+U karet, které podporují více přenosových rychlostí, nastaví rychlost přenosu v b/s.
+Rychlost přenosu je rychlost, kterou jsou bity přenášeny médiem,
+rychlost pro uživatele je nižší kvůli sdílení média a různé režii.
+.br
+Je možné připojit k hodnotě příponu k, M nebo G (dekadický násobitel:
+10^3, 10^6 a 10^9 b/s), nebo doplnit dostatečný počet nul. Význam hodnoty nižší než
+1000 závisí na použité kartě, obvykle znamená index v seznamu přenosových rychlostí.
+Je možné použít
+.I auto
+ke zvolení režimu automatické přenosové rychlosti (ústup na nižší rychlost v zašuměných
+kanálech), což je u většiny karet výchozí nastavení, a
+.I fixed
+k návratu k pevnému nastavení. Pokud je určena přenosová rychlost a 
+.IR auto ,
+může ovladač použít všechny přenosové rychlosti rovné této hodnotě a nižší.
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 rate 11M"
+.br
+.I "	iwconfig eth0 rate auto"
+.br
+.I "	iwconfig eth0 rate 5.5M auto"
+.TP
+.BR rts [_threshold]
+RTS/CTS přidá handshake před každým přenosem paketů, aby se zajistilo,
+že je kanál volný. To zvýší režii, ale také výkon v případě skrytých nodů
+nebo velkého počtu aktivních nodů. Tento parametr nastavuje velikost nejmenšího 
+paketu, pro který node vysílá RTS; hodnota rovná maximální velikosti paketu
+tento mechanismus vypne. Je také možné nastavit tento parametr na
+.IR auto ", " fixed " nebo " off .
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 rts 250"
+.br
+.I "	iwconfig eth0 rts off"
+.TP
+.BR frag [mentation_threshold]
+Fragmentace dovoluje rozdělit IP paket na dávku několika menších částí
+přenesených médiem. To ve většině případů zvětší režii, ale ve velmi zašuměněm
+prostředí sníží ztráty způsobené chybami a umožní paketům projít
+při zarušení. Tento parametr nastaví maximální velikost fragmentu; hodnota
+rovná maximální velikosti paketu tento mechanismus vypne. Je také
+možné nastavit tento mechanismus na
+.IR auto ", " fixed " nebo " off .
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 frag 512"
+.br
+.I "	iwconfig eth0 frag off"
+.TP
+.BR key / enc [ryption]
+Používá se k nastavení šifrovacích klíčů a bezpečnostního režimu.
+.br
+Pro nastavení aktuálního šifrovacího klíče se pouze zadá klíč v hexadecimální podobě jako
+.IR XXXX-XXXX-XXXX-XXXX " nebo " XXXXXXXX .
+Pro nastavení jiného než aktuálního klíče přidejte před nebo za vlastní klíč
+.I [index]
+(tím se nezmění aktuální klíč). Je také možné zadat klíč
+jako řetězec ASCII znaků pomocí předpony
+.I s:
+. Passphrase není v současnosti podporovaná.
+.br
+Pro určení, který klíč má být aktivní, se vloží
+.I [index]
+(bez zadání hodnoty klíče).
+.br
+.IR off " a " on
+Vypnou a znovu zapnou šifrování.
+.br
+Bezpečnostní režim může být
+.I open
+(otevřený) nebo
+.IR restricted ,
+(uzavřený) a jeho význam závisí na použité kartě. Většina karet nepoužívá v
+.I open
+(otevřeném) režimu žádnou autentizaci a karta může také přijímat
+nezašifrované relace, zatímco v
+.I restricted
+(uzavřeném) režimu jsou akceptovány pouze zašifrované relace a karta použije autentizaci,
+pokud je k dispozici.
+.br
+Pokud je třeba nastavit více klíčů, nebo nastavit klíč a určit aktivní klíč,
+je nutné použít více přepínačů
+.B key
+. Parametry mohou být v jakémkoliv pořadí, poslední má přednost.
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 key 0123-4567-89"
+.br
+.I "	iwconfig eth0 key [3] 0123-4567-89"
+.br
+.I "	iwconfig eth0 key s:password [2]"
+.br
+.I "	iwconfig eth0 key [2]"
+.br
+.I "	iwconfig eth0 key open"
+.br
+.I "	iwconfig eth0 key off"
+.br
+.I "	iwconfig eth0 key restricted [3] 0123456789"
+.br
+.I "	iwconfig eth0 key 01-23 key 45-67 [4] key [4]"
+.TP
+.BR power
+Nastavuje režim řízení spotřeby a jeho parametry.
+.br
+Pro nastavení času mezi probuzeními se vloží
+.IR "period `hodnota'" .
+Pro nastavení prodlevy před návratem do spánku se vloží
+.IR "timeout `hodnota'" .
+Je také možné přidat modifikátory
+.IR min " a " max
+. Hodnoty znamenají počet sekund, pro určení v milisekundách
+nebo mikrosekundách se použije přípona m nebo u. Někdy jsou
+tyto hodnoty bez jednotek (počet období mezi beacons a podobně).
+.br
+.IR off " a " on
+vypne a novu zapne řízení spotřeby. Je také možné nastavit
+režim řízení spotřeby na
+.I all
+(přijímá všechny pakety),
+.I unicast
+(přijímá pouze unicast pakety, zahazuje multicast a broadcast) a
+.I multicast
+(přijímá pouze multicast a broadcast, zahazuje unicast pakety).
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 power period 2"
+.br
+.I "	iwconfig eth0 power 500m unicast"
+.br
+.I "	iwconfig eth0 power timeout 300u all"
+.br
+.I "	iwconfig eth0 power off"
+.br
+.I "	iwconfig eth0 power min period 2 power max period 4"
+.TP
+.BR txpower
+U karet podporujících rozdílné vysílací výkony nastavuje vysílací výkon v dBm. Je-li dán výkon 
+.I W
+ve Wattech, je výkon v dBm roven
+.IR "P = 30 + 10.log(W)" .
+Pokud je hodnota doplněna příponou
+.IR mW ,
+je automaticky převedena na dBm.
+.br
+Navíc volby 
+.IR on " a " off
+povolí a zakážou vysílání, 
+.IR auto " a " fixed
+povolí a zakážou možnost měnit výkon (pokud je tato vlastnost k dispozici).
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 txpower 15"
+.br
+.I "	iwconfig eth0 txpower 30mW"
+.br
+.I "	iwconfig eth0 txpower auto"
+.br
+.I "	iwconfig eth0 txpower off"
+.TP
+.BR retry
+Většina karet umí MAC retransmisi a některé umožňují nastavit
+chování tohoto mechanismu.
+.br
+pro nastavení maximálního počtu pokusů o zaslání se zadá
+.IR "limit `hodnota'" .
+Toto je absolutní hodnota (bez jednotky).
+Pro nastavení nejdelšího období, ve kterém se má MAC pokoušet o zaslání, se zadá
+.IR "lifetime `hodnota'" .
+Hodnoty znamenají počet sekund, pro určení v milisekundách
+nebo mikrosekundách se použije přípona m nebo u.
+.br
+je také možné přidat modifikátory
+.IR min " a " max
+. Pokud karta podporuje automatický režim, určují tyto modifikátory rozmezí pro limit nebo lifetime.
+Některé karty definují různé hodnoty v závislosti na velikosti
+paketů, např. v 802.11 určuje
+.I min limit
+tzv. "short retry limit" - limit pro pakety, na které není aplikováno RTS/CTS.
+.br
+.B Příklady:
+.br
+.I "	iwconfig eth0 retry 16"
+.br
+.I "	iwconfig eth0 retry lifetime 300m"
+.br
+.I "	iwconfig eth0 retry min limit 8"
+.TP
+.BR commit
+Některé karty nemusí provést změny zadané přes Wireless Extensions
+okamžitě (mohou čekat na nashromáždění změn a přijmout je
+až když je karta aktivována pomocí ifconfig). Tento příkaz (pokud
+je dostupný) přinutí kartu k přijetí všech nevyřízených změn.
+.br
+To není většinou potřeba, protože karta časem změny přijme, ale může to
+být užitečné při ladění.
+.\"
+.\" DISPLAY part
+.\"
+.SH ZOBRAZENÍ
+Pro každé zařízení, které podporuje wireless extensions, zobrazí
+.I iwconfig
+název použitého
+.B MAC protokolu
+ (název zařízení u proprietárních protokolů),
+.B ESSID
+(Network Name),
+.BR NWID ,
+.B frekvenci
+(nebo kanál),
+.BR sensitivity 
+(citlivost),
+.B mode
+(pracovní režim), 
+.B Access Point
+(adresu přístupového bodu),
+.B bit-rate
+(přenosovou rychlost),
+.BR "RTS threshold"
+(práh RTS), 
+.BR "fragmentation threshold"
+(práh fragmentace),
+.B encryption key
+(šifrovací klíč) a nastavení
+.B power management
+(řízení spotřeby)(pokud je k dispozici).
+.PP
+Zobrazené parametry mají stejný význam a hodnoty jako parametry, 
+které mohou být nastaveny, pro jejich podrobnější vysvětlení se prosím 
+obraťte se na předchozí část.
+.br
+Některé parametry jsou zobrazeny pouze ve své krátké/zkrácené podobě
+(např. šifrování). Je možné použít
+.IR iwlist (8)
+k získání detailů.
+.br
+Některé parametry mají dva režimy (např. přenosová rychlost). Pokud
+hodnotu uvozuje
+.RB ` = ',
+znamená to, že parametr je pevný a daný touto hodnotou, pokud
+ji uvozuje
+.RB ` : ',
+je parametr v automatickém režimu a je zobrazena aktuální hodnota (a
+může se změnit).
+.TP
+.BR "Access Point" / Cell
+Adresa rovná 00:00:00:00:00:00 znamená, že se karta nedokázala asociovat
+s přístupovým bodem (nejspíše problém v nastavení).
+Parametr
+.B Access Point
+bude zobrazen jako
+.B Cell
+v režimu ad-hoc (ze zřejmých důvodů), ale jinak znamená to samé.
+.PP
+Pokud existuje
+.IR "/proc/net/wireless" ,
+.I iwconfig
+se také pokusí zobrazit jeho obsah. Nicméně tyto hodnoty závisí na
+ovladači a zvláštnostech hardware, takže pro jejich správnou interpretaci je nutné obrátit se na
+dokumentaci ovladače.
+.TP
+.B Link quality
+Celková kvalita spoje. Může být založena na úrovni rušení 
+či interference, počtu chyb na úrovni bitů nebo rámců, síle přijímaného
+signálu, synchronizaci časování nebo dalších hardwarových měřeních. Je to
+celková hodnota a zcela záleží na ovladači a hardware.
+.TP
+.B Signal level
+Received signal strength (RSSI - indikátor síly přijímaného signálu). 
+Může být v libovolných jednotkách nebo dBm,
+.I iwconfig
+používá informace z ovladače k interpretaci surových dat v
+.I /proc/net/wireless
+a zobrazení správné jednotky nebo maximální hodnoty (pomocí 8 bitových výpočtů). V
+.I Ad-Hoc
+režimu může být nedefinovaná a měl by být použit 
+.IR iwspy .
+.TP
+.B Noise level
+Úroveň šumu pozadí (když není přenášen žádný paket). Platí stejné poznámky 
+jako pro
+.BR "Signal level" .
+.TP
+.B Rx invalid nwid
+Počet přijatých paketů s odlišným NWID nebo ESSID. Používá se 
+k detekci problémů v nastavení nebo existence sousední sítě
+(na stejné frekvuenci).
+.TP
+.B Rx invalid crypt
+Počet paketů, které hardware nedokázal dešifrovat. Může indikovat
+neplatné nastavení šifrování.
+.TP
+.B Rx invalid frag
+Počet paketů, pro které hardware nedokázal správně znovu sestavit
+jednotlivé fragmenty na fyzické vrstvě (nejspíše jeden chyběl).
+.TP
+.B Tx excessive retries
+Počet paketů, které hardware nedokázal odeslat. Většina MAC
+protokolů zkusí poslat paket několikrát, než to vzdá.
+.TP
+.B Invalid misc
+Ostatní pakety ztracené v souvislosti s určitými bezdrátovými operacemi.
+.TP
+.B Missed beacon
+Počet pravidelných beacons z buňky nebo přístupového bodu, které nebyly zachyceny.
+Beacons jsou vysílány v pravidelných intervalech pro udržení koordinace a
+pokud nejsou zachyceny, většinou to znamená, že je karta mimo dosah.
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" FILES part
+.\"
+.SH SOUBORY
+.I /proc/net/wireless
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR ifconfig (8),
+.BR iwspy (8),
+.BR iwlist (8),
+.BR iwevent (8),
+.BR iwpriv (8),
+.BR wireless (7).

@@ -1,0 +1,158 @@
+.\" Jean II - HPL - 2004
+.\" ifrename.8
+.\"
+.TH IFRENAME 8 "1.březen 2004" "wireless-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+ifrename \- Přejmenuje síťová rozhraní v závislosti na různých statických kritériích
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.B "ifrename [-c configfile] [-p] [-d] [-v] [-V] [-D]"
+.br
+.B "ifrename [-c configfile] [-i interface] [-n newname]"
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B Ifrename 
+je nástroj, který umožňuje přiřadit stálý název pro každé
+síťové rozhraní.
+.PP
+Ve výchozím stavu jsou názvy rozhraní dynamické a každému síťovému rozhraní
+je přiřazen první dostupný název
+.RI ( eth0 ", " eth1 "...)."
+Pořadí, v kterém jsou síťová rozhraní vytvářena, se může lišit. U zabudovaných
+rozhraní závisí na jejich rozpoznání kernelem při spouštění. Výměnná zařízení může
+uživatel připojit v jakémkoliv pořadí.
+.PP
+.B Ifrename
+umožňuje uživateli rozhodnout, jaký název bude síťové rozhraní mít.
+.B Ifrename 
+může využít celou řadu
+.IR voleb ", "
+aby určil, jak jsou názvy rozhraní přiřazovány síťovým rozhraním v systému.
+Nejběžnější volbou je  
+.IR "MAC adresa" 
+rozhraní.
+.PP
+.B Ifrename
+musí být spuštěn předtím, než jsou rozhraní aktivována, proto je většinou používán
+v různých skriptech (init, hotplug), ale jen zřídka přímo uživatelem.
+Jako výchozí,
+.B ifrename 
+přejmenuje všechna rozhraní přítomná v  systému použitím namapování definovaného v
+.IR /etc/iftab .
+.\"
+.\" PARAMETER part
+.\"
+.SH PARAMETRY
+.TP
+.BI "-c " konfiguracni_soubor
+Nastaví konfigurační soubor, který bude použit (výchozí je 
+.IR /etc/iftab ).
+Konfigurační soubor definuje namapování voleb a názvů rozhraní
+a je popsán v
+.IR iftab (5).
+.br
+Pokud je
+.I konfiguracni_soubor
+určen jako "-", je konfigurace načtena ze stdin.
+.TP
+.B -p
+Pokusí se zavést moduly jádra před přejmenováním rozhraní. Jako výchozí 
+prochází
+.B ifrename 
+pouze rozhraní, která jsou již zavedena a nezavádí automaticky požadované
+jaderné moduly. Tento přepínač umožňuje hladkou integraci se systémem, který
+nezavádí moduly před voláním
+.BR ifrename .
+.TP
+.B -d
+Povolí různé úpravy specifické pro
+.B Debian. 
+V kombinaci s
+.BR -p
+budou zavedeny pouze moduly pro rozhraní určená v
+.I /etc/network/interface
+.
+.TP
+.BI "-i " rozhraní
+Přejmenuje pouze určené
+.IR rozhraní ,
+místo všech rozhraní v systému. Vypíše nový název rozhraní.
+.TP
+.BI "-n " novy_nazev
+Když je použito spolu s 
+.IR -i ,
+určí nový název rozhraní. Seznam namapování z konfiguračního
+souboru je ignorován, rozhraní určené pomocí 
+.I -i
+je rovnou přejmenováno na
+.IR novy_nazev 
+Nový název může být žolík (wildcard), ale může obsahovat pouze jedinou "*".
+.br
+Pokud je použit bez
+.IR -i ,
+přejmenuje rozhraní s použitím pouze těch namapování, která by je přejmenovala na
+.IR novy_nazev .
+Nový název nesmí být žolík. Tento způsob použití ifrename 
+.RI ( -n " bez " -i )
+není doporučen, protože je neefektivní. Musejí být zpracována všechna rozhraní systému, 
+a proto není ve většině případů rychlejší než kdyby je ifrename přejmenovalo všechny (bez
+.IR -n " a zároveň bez " -i ).
+.TP
+.B -t
+Povolí podporu převzetí názvů. To umožní výměnu názvů rozhraní
+mezi dvěma či více rozhraními.
+.br
+Převzetí umožňuje rozhraní "ukrást" název jinému rozhraní.
+To funguje pouze s jádrem 2.6.x a pokud druhé rozhraní neběží.
+Tímpádem není kompatibilní s Hotplug. Druhému rozhraní je přiřazen
+náhodný název, který lze později pomocí "ifrename" změnit.
+.br
+Počet převzetí je omezen, aby se zabránilo nekonečným smyčkám,
+a proto nemusejí být některé komplexní vícecestné situace správně zpracovány.
+.br
+V každém případě není převod názvů a ani používání této možnosti doporučeno,
+je lepší zvolit pro rozhraní jedinečné a jednoznačné názvy...
+.TP
+.B -D
+Režim dry-run ("nanečisto"). Ifrename nezmění žádné rozhraní, pouze vypíše
+nový název rozhraní, pokud je to možné, a skončí.
+.br
+V režimu dry-run nejsou řešeny wildcards. Nový název rozhraní je vytištěn
+i v případě, že je stejný jako původní název.
+.TP
+.B -V
+Užvaněný režim. Ifrename zobrazí interní výsledky průchodu svým
+konfiguračním souborem a dotazy na volby rozhraní. V kombinaci s
+přepínačem
+.I dry-run
+představuje dobrý způsob debugování komplexních nastavení nebo triviálních
+problémů.
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" FILES part
+.\"
+.SH SOUBORY
+.I /etc/iftab
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR ifconfig (8),
+.BR ip (8),
+.BR iftab (5).

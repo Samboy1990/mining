@@ -1,0 +1,118 @@
+.\" Guus Sliepen - 2001
+.\" Doplnil a opravil Jean Tourrilhes - 2002-2003
+.\" iwgetid.8
+.\"
+.TH IWGETID 8 "2.prosinec 2003" "wireless-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iwgetid \- Zobrazí ESSID, NWID nebo adresu AP/Cell (přístupového bodu/buňky) v bezdrátové síti
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.BI "iwgetid " [interface] " [--raw] [--scheme] [--ap] [--freq]"
+.br
+.BI "                   [--mode] [--protocol] [--channel]
+.br
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B iwgetid
+se používá k zjištění NWID, ESSID nebo adresy AP/Cell (přístupového bodu/buňky)
+v bezdrátové síti, která je právě využívána. Zobrazená informace je stejná jako
+ta, kterou ukazuje
+.BR iwconfig ", ale " iwgetid
+se snadněji integruje do skriptů.
+.br
+Jako výchozí,
+.B iwgetid
+vypíše 
+.I ESSID
+zařízení, pokud zařízení nemá žádné ESSID, vytiskne jeho
+.IR NWID .
+.br
+Výchozí formát pro výstup je pretty-printing (člověkem čitelný).
+.\"
+.\" OPTIONS part
+.\"
+.SH VOLBY
+.TP
+.B --raw
+Tento přepínač vypne pretty-printing.
+Je možné jej kombinovat s ostatními přepínači (s výjimkou
+.BR --scheme ),
+takže se správnou kombinací přepínačů lze vytisknout surové
+ESSID, adresu AP nebo Mode.
+.br
+Tento formát je ideální pro uložení výsledku iwgetid jako proměnné ve skriptech
+.I Shellu
+nebo
+.I Perlu
+nebo pro předání výsledku jako parametru příkazové řádky pro
+.BR iwconfig .
+.TP
+.B --scheme
+Tento přepínač je podobný předchozímu, vypne pretty-printing 
+a odstraní všechny znaky, které nejsou alfanumerické
+(jako mezery, interpunkci a kontrolní znaky).
+.br
+Výsledný výstup je validní <<\ Pcmcia scheme identifer\ >> (který může být
+použit jako parametr příkazu
+.BR "cardctl scheme" ).
+Tento formát je také ideální, pokud je výsledek iwgetid použit jako volba ve skriptech
+.I Shellu
+nebo
+.I Perlu
+nebo jako název souboru.
+.TP
+.B --ap
+Zobrazí MAC adresu bezdrátového
+.I Access Point
+(přístupového bodu) nebo
+.IR Cell .
+(buňky)
+.TP
+.B --freq
+Zobrazí aktuální
+.I frequency
+(frekvenci) nebo
+.I channel
+(kanál), používaný rozhraním.
+.TP
+.B --channel
+Zobrazí aktuální
+.I channel
+(kanál), používaný rozhraním. Kanál je získán z aktuální frekvence
+a seznamu frekvencí dodaného rozhraním.
+.TP
+.B --mode
+Zobrazí aktuální
+.I mode
+(režim) rozhraní.
+.TP
+.B --protocol
+Zobrazí
+.I protocol name
+(název protokolu) rozhraní. Tak je možné identifikovat všechny karty, které
+jsou vzájemně kompatibilní a akceptují stejný typ nastavení.
+.br
+Je to také možnost jak 
+.I ověřit podporu Wireless Extensions
+na rozhraní, protože je to jediný atribut,
+který všechny ovladače podporující Wireless Extensions musejí podporovat.
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR iwconfig (8),
+.BR ifconfig (8),
+.BR iwspy (8),
+.BR iwpriv (8).

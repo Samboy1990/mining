@@ -1,0 +1,129 @@
+.\" Jean Tourrilhes - HPL - 2002 - 2004
+.\" wireless.7
+.\"
+.TH WIRELESS 7 "4.duben 2004" "wireless-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+wireless \- Wireless Tools a Wireless Extensions
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.B iwconfig
+.br
+.B iwpriv \-a
+.br
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B Wireless Extensions
+jsou API, které umožňují manipulovat s bezdrátovými síťovými rozhraními.
+Skládají se ze souboru nástrojů a konfiguračních souborů. Podrobněji
+jsou popsány v Linux Wireless LAN Howto.
+.br
+.B Wireless Tools
+se používají ke změně konfigurace bezdrátových síťových rozhraní za běhu,
+k získání jejich aktuální konfigurace, statistik a diagnostice.
+Popisují je jejich vlastní manuálové stránky, viz odkazy níže.
+.br
+.B Nastavení bezdrátového připojení
+se v každé distribuci linuxu liší. Tato manuálová stránka bude obsahovat
+postup nastavení pro několik běžných distribucí. Prozatím se podívejte do 
+souboru DISTRIBUTIONS.txt, který je součástí balíčku Wireless Tools.
+.\"
+.\" DEBIAN 3.0 part
+.\"
+.SH DEBIAN 3.0
+V Debianu 3.0 (a vyšším) je možné nastavit bezdrátová síťová zařízení
+nástrojem pro nastavení sítě
+.BR ifupdown (8).
+.TP
+.B Soubor:
+.I /etc/network/interfaces
+.TP
+.B Forma:
+.RI wireless\- "<funkce> <hodnota>"
+.br
+wireless\-essid Home
+.br
+wireless\-mode Ad\-Hoc
+.TP
+.B Další informace:
+.I /etc/network/if\-pre\-up.d/wireless\-tools
+.br
+.I /usr/share/doc/wireless\-tools/README.Debian
+.\"
+.\" SuSE 8.0 part
+.\"
+.SH SuSE 8.0
+SuSE 8.0 (a vyšší) integrovalo nastavení bezdrátového připojení do svých
+síťových skriptů.
+.TP
+.B Nástroj:
+.B Yast2
+.TP
+.B Soubor:
+.I /etc/sysconfig/network/wireless
+.br
+.I /etc/sysconfig/network/ifcfg\-*
+.TP
+.B Forma:
+.RI WIRELESS_ "<funkce>" = "<hodnota>"
+.br
+WIRELESS_ESSID="Home"
+.br
+WIRELESS_MODE=Ad\-Hoc
+.TP
+.B Další informace:
+man ifup
+.br
+info scpm
+.\"
+.\" PCMCIA part
+.\"
+.SH PŮVODNÍ PCMCIA SKRIPTY
+Pokud používáte původní konfigurační skripty z balíčku Pcmcia,
+Můžete použít tuto metodu.
+.TP
+.B Soubor:
+.I /etc/pcmcia/wireless.opts
+.TP
+.B Forma:
+*,*,*,*)
+.br
+ESSID="Home"
+.br
+MODE="Ad-Hoc"
+.br
+;;
+.TP
+.B Další informace:
+.I /etc/pcmcia/wireless
+.br
+Soubor
+.IR "PCMCIA.txt" ,
+který je součástí balíčku Wireless Tools
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.br
+.I http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR iwconfig (8),
+.BR iwlist (8),
+.BR iwspy (8),
+.BR iwpriv (8),
+.BR iwevent (8).
