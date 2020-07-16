@@ -1,0 +1,118 @@
+.\" Jean Tourrilhes - HPL - 2002 - 2004
+.\" iwevent.8
+.\"
+.TH IWEVENT 8 "23.červen 2004" "net-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iwevent \- Zobrazí bezdrátové události vyvolané ovladači a změnami nastavení
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTAXE
+.BI "iwevent "
+.br
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B iwevent
+zobrazí bezdrátové události přijaté prostřednictvím socketu RTNetlink. Každý
+řádek zobrazuje jednotlivou bezdrátovou událost popisující, co se stalo
+na určeném bezdrátovém rozhraní.
+.br
+Tento příkaz nemá žádné parametry.
+.\"
+.\" DISPLAY part
+.\"
+.SH ZOBRAZENÍ
+Jsou dva typy bezdrátových událostí.
+.PP
+První typ jsou události vztahující se ke změně bezdrátových nastavení na
+rozhraní (typicky prostřednictvím
+.B iwconfig
+nebo skriptu volajícího
+.BR iwconfig ).
+Jsou oznamována pouze nastavení, která mohou vést k narušení spojení.
+V současnosti jsou oznamovány události měnící jedno z následujících
+nastavení:
+.br
+.I "	Network ID"
+.br
+.I "	ESSID"
+.br
+.I "	Frequency"
+.br
+.I "	Mode"
+.br
+.I "	Encryption"
+.br
+Všechny tyto události jsou generovány na všech bezdrátových rozhraních
+bezdrátovým subsystémem jádra (ale jen když byl ovladač převeden na
+nové API ovladačů).
+.PP
+Dalším typem jsou události generované hardwarem, když se něco stane
+nebo byl byla dokončena úloha. Tyto události zahrnují:
+.TP
+.B New Access Point/Cell address
+(nová adresa přístupového bodu/buňky) Rozhraní se připojilo k novému
+přístupovému bodu či AD-Hoc buňce nebo s ním ztratilo spojení. Je to 
+stejná MAC adresa, jako hlásí
+.BR iwconfig .
+.TP
+.B Scan request completed
+(požadavek na skenování dokončen) Požadavek na skenování byl dokončen,
+výsledek je k dispozici (viz
+.BR iwlist 
+).
+.TP
+.B Tx packet dropped
+(vyslaný paket zahozen) Paket směrovaný na tuto adresu byl zahozen, protože rozhraní se
+domnívá, že tento node už neodpovídá (obvykle pokud bylo překročeno maximum
+pokusů na úrovni MAC). Toto je obvykle prvotní známka toho, že
+node mohl opustit buňku nebo se ocitl mimo dosah, ale může to být i 
+zeslabením signálu nebo nadměrným rušením.
+.TP
+.B Custom driver event
+(Zvláštní událost ovladače) Událost specifická pro ovladač. Prosím prozkoumejte dokumentaci ovladače.
+.TP
+.B Registered node
+Rozhraní úspěšně zaregistrovalo nového bezdrátového klienta/peer.
+Většinou je generována, pokud rozhraní pracuje jako přístupový bod
+(režim master).
+.TP
+.B Expired node
+Registrace klienta/peer na tomto rozhraní vypršela. 
+Většinou je generována, pokud rozhraní pracuje jako přístupový bod
+(režim master).
+.TP
+.B Spy threshold crossed
+(překročen práh pro sledování) Síla signálu u jedné z adres v seznamu iwspy poklesla pod spodní práh nebo
+překročila horní práh.
+.PP
+Většina bezdrátových ovladačů generuje pouze část z těchto událostí, nikoli
+všechny. Jejich seznam záleží na konkrétní kombinaci hardware a ovladače.
+Pro více informací o vytváření událostí prosím prozkoumejte dokumentaci
+ovladače a použijte
+.IR iwlist (8)
+k zjištění, co ovladač podporuje.
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR iwconfig (8),
+.BR iwlist (8),
+.BR iwspy (8),
+.BR iwpriv (8),
+.BR wireless (7).
