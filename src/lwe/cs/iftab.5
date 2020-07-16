@@ -1,0 +1,189 @@
+.\" Jean II - HPL - 2004
+.\" iftab.5
+.\"
+.TH IFTAB 5 "1.březen 2004" "wireless-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iftab \- statické informace o síťových rozhraních
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+Soubor
+.B /etc/iftab
+obsahuje popisnou informaci o různých síťových rozhraních.
+.B iftab
+je používán pouze programem
+.IR ifrename (8)
+k přiřazení stálých názvů síťových rozhraní každému síťovému rozhraní.
+.PP
+.B /etc/iftab
+definuje sadu
+.IR namapování .
+Každé namapování obsahuje název rozhraní a sadu deskriptorů.
+Deskriptory umožňují
+.B ifrename
+identifikovat každé síťové rozhraní v  systému. Pokud síťové rozhraní odpovídá
+všem deskriptorům z namapování,
+.B ifrename
+se pokusí změnit název rozhraní na název určený v namapování.
+.\"
+.\" MAPPINGS part
+.\"
+.SH NAMAPOVÁNÍ
+Každé namapování je popsáno na zvláštní řádce, začínající
+.IR "interface name" ,
+(názvem rozhraní) a obsahuje sadu
+.IR deskriptorů ,
+oddělených mezerami nebo tabulátory.
+.PP
+Vztah mezi deskriptory v namapování je
+.IR "logické a" .
+Namapování odpovídá síťovému rozhraní, pouze když odpovídají všechny deskriptory.
+Pokud síťové rozhraní nepodporuje určitý deskriptor, nebude vyhovovat žádnému
+namapování používajícímu tento deskriptor.
+.PP
+Pokud je potřeba použít alternativní deskriptory pro název rozhraní
+(logické nebo), vytvořte dvě různá namapování se stejným názvem rozhraní
+(na každém řádku jednu).
+.B Ifrename
+vždycky použije první odpovídající namapování od
+.I konce
+.BR iftab ,
+proto by restriktivnější namapování měla být uvedena naposled.
+.\"
+.\" INTERFACE NAME part
+.\"
+.SH NÁZEV ROZHRANÍ
+První částí každého namapování je název rozhraní. Pokud síťové rozhraní
+odpovídá všem deskriptorům v namapování,
+.B ifrename
+se pokusí změnit název rozhraní na název určený v namapování.
+.PP
+Název rozhraní v namapování je buďto pouhý název rozhraní (jako třeba
+.IR eth2 " nebo " wlan0 )
+nebo šablona obsahující jediného žolíka (wildcard) (např.
+.IR eth* " nebo " wlan* ).
+V případě žolíka nahradí jádro znak "*" za nejnižší dostupné
+celé číslo, které zajistí jedinečnost názvu rozhraní.
+.\"
+.\" DESCRIPTORS part
+.\"
+.SH DESKRIPTORY
+Každý deskriptor je složen z názvu deskriptoru a hodnoty deskriptoru.
+Deskriptory určují statické vlastnosti síťového rozhraní, jejich
+cílem je jednoznačně identifikovat každý kus hardware.
+.PP
+Většina uživatelů použije pouze volbu
+.B mac
+, ostatní volby jsou určeny k zvláštním nastavením.
+.TP
+.BI mac " MAC adresa"
+Porovná MAC adresu rozhraní se zadanou MAC adresou. MAC adresu
+rozhraní je možné zobrazit pomocí
+.IR ifconfig (8)
+nebo
+.IR ip (8).
+Zadaná MAC adresa může 
+obsahovat "*" pro výběr žolíků (wildcards).
+.br
+Je to nejběžnější volba, protože většina rozhraní má unikátní MAC
+adresu, která umožňuje síťové rozhraní jednoznačně identifikovat.
+Nicméně některá rozhraní nemají MAC adresu, dokud nejsou aktivována
+a v takovém případě je užití tohoto selektoru ošidné.
+.TP
+.BI arp " typ arp"
+Porovná typ ARP (ARP Type)(také zvané "Link Type") rozhraní se zadaným typem ARP.
+Typ ARP u rozhraní je možné zobrazit pomocí
+.IR ifconfig (8)
+nebo
+.IR ip (8).
+.br
+Tento selektor je užitečný pokud ovladač vytváří více síťových rozhraní
+pro jedinou síťovou kartu.
+.TP
+.BI driver " název ovladače"
+Porovná název ovladače rozhraní se zadaným názvem ovladače.
+Název ovladače rozhraní je možné zobrazit pomocí
+.IR "ethtool -i" (8).
+.TP
+.BI businfo " informace o sběrnici"
+Porovná informaci o sběrnici rozhraní rozhraní se zadanou informací
+o sběrnici. Informaci o sběrnici rozhraní je možné zobrazit pomocí
+.IR "ethtool -i" (8).
+.TP
+.BI firmware " verze firmware"
+Porovná verzi firmware rozhraní s informací o verzi firmware.
+Revizi firmware rozhraní je možné zobrazit pomocí
+.IR "ethtool -i" (8).
+.TP
+.BI baseaddress " port"
+Porovná port rozhraní se zadaným portem. Port rozhraní je možné zobrazit pomocí
+.IR ifconfig (8).
+.br
+Protože většina karet používá dynamické přidělování portů, je
+tato volba užitečná pouze pro ISA a EISA karty.
+.TP
+.BI irq " číslo přerušení"
+Porovná číslo přerušení (IRQ) rozhraní se zadaným
+číslem přerušení. Číslo přerušení rozhraní je možné zobrazit pomocí
+.IR ifconfig (8).
+.br
+Protože přerušení mohou být sdílená, obvykle tento selektor nestačí
+k jednoznačné identifikaci rozhraní.
+.TP
+.BI iwproto " bezdrátový protokol"
+Porovná bezdrátový protokol rozhraní se zadaným
+bezdrátovým protokolem. Bezdrátový protokol rozhraní je možné zobrazit pomocí
+.IR iwconfig (8).
+.br
+Tato volba je podporována pouze na bezdrátových rozhraních a nestačí
+k jednoznačné identifikaci rozhraní.
+.TP
+.BI pcmciaslot " pcmcia slot"
+Porovná číslo Pcmcia socketu rozhraní se zadaným číslem slotu. Číslo Pcmcia socketu
+rozhraní je možné zobrazit pomocí
+.IR "cardctl ident" (8).
+.br
+Tato volba je obvykle podporována pouze na 16 bitových kartách, pro 32 bitové
+karty je lepší použít selektor
+.BR businfo .
+.\"
+.\" EXAMPLE part
+.\"
+.SH PŘÍKLAD
+# Toto je komentář
+.br
+eth2		mac 08:00:09:DE:82:0E
+.br
+eth3		driver wavelan irq 15 baseaddress 0x390
+.br
+eth4		driver pcnet32 businfo 0000:02:05.0
+.br
+air*		mac 00:07:0E:* arp 1
+.\"
+.\" AUTHOR part
+.\"
+.SH AUTOR
+Jean Tourrilhes \- jt@hpl.hp.com
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+.\"
+.\" FILES part
+.\"
+.SH SOUBORY
+.I /etc/iftab
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR ifrename (8),
+.BR ifconfig (8),
+.BR ip (8),
+.BR ethtool (8),
+.BR iwconfig (8).

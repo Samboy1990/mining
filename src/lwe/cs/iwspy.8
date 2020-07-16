@@ -1,0 +1,111 @@
+.\" Jean II - HPLB - 96
+.\" iwspy.8
+.\"
+.TH IWSPY 8 "31.říjen 1996" "net-tools" "Linux - Manuál programátora"
+.\"
+.\" NAME part
+.\"
+.SH JMÉNO
+iwspy \- Získá bezdrátové statistiky o určených nodech
+.\"
+.\" SYNOPSIS part
+.\"
+.SH SYNTYXE
+.BI "iwspy " rozhraní 
+.br
+.BI "iwspy " rozhraní " [+] " DNSNAME " | " IPADDR " | " HWADDR " [...]"
+.br
+.BI "iwspy " rozhraní " off"
+.br
+.BI "iwspy " rozhraní " setthr " "low high"
+.br
+.BI "iwspy " rozhraní " getthr"
+.\"
+.\" DESCRIPTION part
+.\"
+.SH POPIS
+.B Iwspy
+se používá k nastavení seznamu sledovaných adres na bezdrátovém síťovém rozhraní a
+k zpětnému čtení informací o kvalitě spoje pro každou z nich. Tyto
+informace jsou stejné jako ty uvedené v
+.IR "/proc/net/wireless":
+kvalita spoje, síla signálu, hladina šumu.
+.PP
+Tyto informace jsou aktualizovány pokaždé, když je přijat nový paket, takže
+každá adresa na seznamu zvyšuje zátěž ovladače.
+.PP
+Tato funkcionalita platí pouze pro nody v aktuální bezdrátové buňce, není možné 
+sledovat přístupové body, se kterými není zařízení asociováno (k tomu slouží skenování)
+, ani nody v jiných buňkách. V režimu Managed procházejí pakety většinou přes přístupový
+bod a v tom případě je získána síla signálu přístupového bodu. Proto je tato funkce 
+užitečná víceméně jen v režimu Ad-Hoc nebo Master.
+.\"
+.\" PARAMETER part
+.\"
+.SH PARAMETRY
+Je možné nastavit až 8 adres.
+.TP
+.BR DNSNAME " | " IPADDR
+Nastaví IP adresu nebo, v některých případech, DNS název (pomocí name
+resolveru). Protože hardware pracuje s hardwarovými adresami,
+.B iwspy
+přeloží IP adresu pomocí
+.IR ARP .
+Může se stát, že adresa není v ARP cache a
+.B iwspy
+neuspěje. V tom případě použijte
+.IR ping (8)
+na toto jméno/adresu a zkuste to znovu.
+.TP
+.B HWADDR
+Nastaví hardwarovou (MAC) adresu (tato adresa se nepřekládá ani nekontroluje,
+na rozdíl od IP adresy). Adresa musí obsahuvat dvojtečky
+.RB ( : )
+aby byla uznána za hardwarovou adresu.
+.TP
+.B +
+Přidá novou sadu adres na konec stávajícího seznamu, místo aby jej nahradil.
+Seznam adres je pro každé zařízení jedinečný, proto by tato volba měla být užívána, aby
+se zabránilo konfliktům.
+.TP
+.B off
+Odstraní současný seznam adres a vypne sledovací funkci.
+.TP
+.B setthr
+Nastaví
+.I low
+(spodní) a
+.I high
+(horní) práh síly signálu, pro spuštění události iwspy (podporuje-li to ovladač).
+.br
+Pokaždé, když síla signálu jakékoliv z adres sledované iwspy
+poklesne pod spodní práh nebo přehročí horní práh, je vygenerována bezdrátová událost.
+.br
+To je možné použít ke sledování výpadků spoje bez nutnosti pravidelného spouštění iwspy.
+.TP
+.B getthr
+Získá aktuální
+.I low
+(spodní) a 
+.I high
+(horní) práh síly signálu pro událost iwspy.
+.\"
+.\" TRANSLATION part
+.\"
+.SH PŘEKLAD
+Pavel Heimlich \- tropikhajma@seznam.cz, březen 2005 (wireless_tools.28pre4).
+\"
+.\" FILES part
+.\"
+.SH SOUBORY
+.I /proc/net/wireless
+.\"
+.\" SEE ALSO part
+.\"
+.SH DALŠÍ INFORMACE
+.BR iwconfig (8),
+.BR iwlist (8),
+.BR iwevent (8),
+.BR iwpriv (8),
+.BR wireless (7).
+
